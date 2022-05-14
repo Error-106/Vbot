@@ -24,7 +24,7 @@ def info(update: Update, context: CallbackContext) -> None:
     if(check1 == 1):
         update.message.reply_text('你还未绑定Emby账号，请先绑定！')
     elif(check1 == 2):
-        file = open('/root/accounts.txt',"r")
+        file = open('/home/accounts.txt',"r")
         accounts = file.read().splitlines()
         file.close()
         for account in accounts:
@@ -89,7 +89,7 @@ def create(update: Update, context: CallbackContext) -> None:
             requests.post('请把此处替换为你的Emby网址/emby/Users/'+id+'/Policy', headers=headers1, params=params1, data=data1)
 
             update.message.reply_text('注册用户名：' + name)
-            f = open('/root/accounts.txt', 'a')
+            f = open('/home/accounts.txt', 'a')
             f.write(str(chat_id) + ' ' + id + '\n')
             f.close()
         elif(status1 == 400):
@@ -124,14 +124,14 @@ def bind(update: Update, context: CallbackContext) -> None:
         names = text.split(' ')
         name = names[1]
         userid = nametoid(name)
-        with open("/root/accounts.txt","r",encoding="utf-8") as f:
+        with open("/home/accounts.txt","r",encoding="utf-8") as f:
             lines = f.readlines()
-        with open("/root/accounts.txt","w",encoding="utf-8") as f_w:
+        with open("/home/accounts.txt","w",encoding="utf-8") as f_w:
             for line in lines:
                 if str(chatid) in line:
                     continue
                 f_w.write(line)
-        file2 = open('/root/accounts.txt','a')
+        file2 = open('/home/accounts.txt','a')
         file2.write(str(chatid) + ' ' + userid + '\n')     
         file2.close()
         update.message.reply_text('绑定成功！')
@@ -158,7 +158,7 @@ def nametoid(name):
     return id
 
 def idtoname(chatid):
-    file = open('/root/accounts.txt',"r")
+    file = open('/home/accounts.txt',"r")
     accounts = file.read().splitlines()
     file.close()
     for account in accounts:
@@ -179,7 +179,7 @@ def idtoname(chatid):
 
 
 def judge(chat_id):
-    file = open('/root/accounts.txt',"r")
+    file = open('/home/accounts.txt',"r")
     kk = 0
     accounts = file.read().splitlines()
     file.close()
@@ -190,7 +190,7 @@ def judge(chat_id):
     return kk
 
 def judgebind(chat_id):
-    file = open('/root/accounts.txt',"r")
+    file = open('/home/accounts.txt',"r")
     kk = 0
     accounts = file.read().splitlines()
     file.close()
@@ -206,7 +206,7 @@ def judgebind(chat_id):
 
 def passwd(chat_id):
     check = 0
-    file = open('/root/accounts.txt',"r")
+    file = open('/home/accounts.txt',"r")
     accounts = file.readlines()
     file.close()
     for account in accounts:
