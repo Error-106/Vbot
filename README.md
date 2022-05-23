@@ -7,7 +7,7 @@
 
 
 
-#### 追剧更新自动化脚本
+#### [追剧更新自动化脚本 ———— 动漫篇](https://github.com/MisakaF0406/MisakaF_Emby/blob/main/tvshows/anime/%E5%8A%A8%E6%BC%AB%E7%AF%87.md)
 
 
 
