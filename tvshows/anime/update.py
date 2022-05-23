@@ -39,7 +39,7 @@ elif(judge[0] == "ANi"):
 
 
 time.sleep(5)
-os.system('rclone copy --drive-chunk-size 64M /media/Emby_Temp/ googledrive:Emby/动漫/2022-4/ &') #这里只是例子，请根据自己的实际路径更改
+os.system('rclone copy --drive-chunk-size 64M /media/Emby_Temp/ googledrive:Emby/动漫/2022-4/ &') #这里只是例子，请根据自己的实际路径更改，/media/Emby_Temp/是存放所有动漫的文件夹，比如间谍过家家的目录是：/media/Emby_Temp/间谍过家家
 time.sleep(90)
 '''这里原本是自动刷新媒体库，因涉及到的敏感信息太多，故整段删除，如果想添加属于自己的自动扫库可以进行抓包，然后通过python post发送。不教了，开摆。'''
 
