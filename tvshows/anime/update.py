@@ -45,6 +45,7 @@ def deldir(path):
 zhengze = re.compile(r'\[(.+?)\]', re.S)
 try:
     judge = re.findall(zhengze, filename)
+    test = judge[0]
 except:
     nn = name[length-3] #nn=剧集名
     seanson1 = name[length-2]
