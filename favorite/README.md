@@ -48,7 +48,7 @@
 
 注意，由于用官方镜像内缺失相关环境，请使用
 
-[https://hub.docker.com/r/linuxserver/emby]: linuxserver/emby
+[linuxserver/emby]: https://hub.docker.com/r/linuxserver/emby
 
 提供的镜像，也算半个官方性质，与官方同步更新，启动命令无需修改。
 
