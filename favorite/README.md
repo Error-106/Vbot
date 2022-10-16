@@ -46,7 +46,7 @@
 
 #### 3.2.1、Docker安装的Emby
 
-注意，由于用官方镜像内缺失相关环境，请使用[linuxserver/emby]:(https://hub.docker.com/r/linuxserver/emby)提供的镜像，也算半个官方性质，与官方同步更新，启动命令无需修改。
+注意，由于用官方镜像内缺失相关环境，请使用[linuxserver/emby](https://hub.docker.com/r/linuxserver/emby)提供的镜像，也算半个官方性质，与官方同步更新，启动命令无需修改。
 
 将**服务端**文件夹内的两个文件上传到服务器内，修改update.py内的数据库连接信息与BOT API。本文假设在/mnt/notify文件夹下，需要将此文件夹映射到容器内。在docker run命令中加入`--volume /mnt/notify:/mnt/notify`，启动容器。
 
