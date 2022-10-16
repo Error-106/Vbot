@@ -11,4 +11,4 @@
 
 
 
-交流社群：https://t.me/MisakaF_Emby_chat1
+交流社群：https://t.me/MisakaF_Emby_chat
