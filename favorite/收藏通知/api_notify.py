@@ -224,7 +224,16 @@ def update():
                 else:
                     print("skip!")
             else:
-                bot.send_message(chat_id=chatid, text='请再次点击收藏按钮')
+                try: 
+                    sql = "UPDATE favorite set locked=0 where chatid="+str(chatid)
+                    print(sql)
+                    db.execute(sql)
+                    connect.commit()
+                except Exception as e:
+                    print(e)
+                else:
+                    bot.send_message(chat_id=chatid, text='请再次点击收藏按钮')
+                
     return('200')
   
 if __name__ == '__main__':
