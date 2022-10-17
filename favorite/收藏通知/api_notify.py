@@ -213,7 +213,7 @@ def update():
                     if(back == 1):
                         message = "[Emby公益服]"+item_name+"：取消收藏成功"
                         bot.send_message(chat_id=chatid, text=message)
-            elif(lock == '1'):
+            else:
                 try: 
                     sql = "UPDATE favorite set locked=0 where chatid="+str(chatid)
                     print(sql)
