@@ -213,7 +213,7 @@ def update():
                     if(back == 1):
                         message = "[Emby公益服]"+item_name+"：取消收藏成功"
                         bot.send_message(chat_id=chatid, text=message)
-            else:
+            elif(lock == '1'):
                 try: 
                     sql = "UPDATE favorite set locked=0 where chatid="+str(chatid)
                     print(sql)
@@ -223,6 +223,8 @@ def update():
                     print(e)
                 else:
                     print("skip!")
+            else:
+                bot.send_message(chat_id=chatid, text='请再次点击收藏按钮')
     return('200')
   
 if __name__ == '__main__':
