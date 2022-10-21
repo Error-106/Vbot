@@ -1,18 +1,10 @@
 from typing import NoReturn
 from time import sleep
 from asyncio import sleep
-import requests
-import re
-import pymysql,telegram
-
+import requests,re,telegram,dirver,config
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, CallbackContext
 
-#全局变量
-api = "自己填"
-url = "自己填"
-bot_api = "自己填"
-group_chat_id = "自己填" #官方群组的名称，例如：@MisakaF_Emby_chat
 
 #连接数据库
 connect = pymysql.connect(host='数据库地址',   # 本地数据库
