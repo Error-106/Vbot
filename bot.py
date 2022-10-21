@@ -1,18 +1,17 @@
+#-*- coding: UTF-8 -*-
+from sqlite3 import Cursor
 from typing import NoReturn
-from time import sleep
+from time import pthread_getcpuclockid, sleep
 from asyncio import sleep
-import requests,re,telegram,dirver,config
+import requests,re,telegram
+from sqldriver import PTConnectionPool
+from config import telebotconfig
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, CallbackContext
 
-
 #连接数据库
-connect = pymysql.connect(host='数据库地址',   # 本地数据库
-                          user='数据库用户名',
-                          password='数据库密码!',
-                          db='数据库名',
-                          charset='utf8') #服务器名,账户,密码，数据库名称
-db = connect.cursor()
+#pooldb=sqldriver.PTConnectionPool()
+#connect,db=pooldb.getconn()
 
 def start(update: Update, context: CallbackContext):
     update.message.reply_text('请输入：/create + 用户名 来注册\n\n例如通过发送"/create helloworld"来注册一个用户名为helloworld的账号')
@@ -30,9 +29,10 @@ def info(update: Update, context: CallbackContext) -> None:
                 update.message.reply_text('你还未绑定Emby账号，请先绑定！')
         elif(check1 == 2):
             try:
-                create_sqli = "SELECT * FROM user WHERE chatid = "+ str(chat_id)
-                db.execute(create_sqli)
-                result = db.fetchall()
+                with PTConnectionPool() as ptc:
+                    create_sqli = "SELECT * FROM user WHERE chatid = "+ str(chat_id)
+                    ptc.cursor.execute(create_sqli)
+                    result = ptc.cursor.fetchall()
             except Exception as e:
                 update.message.reply_text("失败:", e)
             else:
@@ -42,9 +42,9 @@ def info(update: Update, context: CallbackContext) -> None:
             }
 
             params = {
-                'api_key': api,
+                'api_key': telebotconfig.api,
             }
-            response = requests.get(url + '/emby/Users/' + userid, params=params, headers=headers)
+            response = requests.get(telebotconfig.url + '/emby/Users/' + userid, params=params, headers=headers)
             responsejson = response.json()
             name = responsejson['Name']
             createdate = responsejson['DateCreated']
@@ -73,12 +73,12 @@ def create(update: Update, context: CallbackContext) -> None:
             }
 
             params = (
-                        ('api_key', api),
+                        ('api_key', telebotconfig.api),
                     )
 
             data = '{"Name":"'+name+'","HasPassword":true}'
 
-            response = requests.post(url + '/emby/Users/New', headers=headers, params=params, data=data)
+            response = requests.post(telebotconfig.url + '/emby/Users/New', headers=headers, params=params, data=data)
 
             status1 = response.status_code
             if(response != '' and status1 == 200):
@@ -92,18 +92,19 @@ def create(update: Update, context: CallbackContext) -> None:
                             }
 
                 params1 = (
-                            ('api_key', api),
+                            ('api_key', telebotconfig.api),
                         )
 
                 data1 = '{"IsAdministrator":false,"IsHidden":true,"IsHiddenRemotely":true,"IsDisabled":false,"EnableRemoteControlOfOtherUsers":false,"EnableSharedDeviceControl":false,"EnableRemoteAccess":true,"EnableLiveTvManagement":false,"EnableLiveTvAccess":true,"EnableMediaPlayback":true,"EnableAudioPlaybackTranscoding":false,"EnableVideoPlaybackTranscoding":false,"EnablePlaybackRemuxing":false,"EnableContentDeletion":false,"EnableContentDownloading":false,"EnableSubtitleDownloading":false,"EnableSubtitleManagement":false,"EnableSyncTranscoding":false,"EnableMediaConversion":false,"EnableAllDevices":true,"SimultaneousStreamLimit":3}'
 
-                requests.post(url + '/emby/Users/'+id+'/Policy', headers=headers1, params=params1, data=data1)
+                requests.post(telebotconfig.url + '/emby/Users/'+id+'/Policy', headers=headers1, params=params1, data=data1)
 
                 try: 
                     sql = "insert into user (chatid,emby_userid) values ("+str(chat_id)+","+'"'+str(id)+'"'+")"
                     print(sql)
-                    db.execute(sql)
-                    connect.commit()
+                    with PTConnectionPool() as ptc
+                        ptc.cursor.execute(sql)
+                        ptc.conn.commit()
                 except Exception as e:
                     update.message.reply_text("失败:", e)
                 else:
@@ -145,9 +146,10 @@ def bind(update: Update, context: CallbackContext) -> None:
         check2 = verify(name,password)
         if(check2 == 1):
             try:
-                sql = "UPDATE user SET emby_userid="+'"'+str(userid)+'"'+" WHERE chatid ="+str(chatid)
-                db.execute(sql)
-                connect.commit()
+                with PTConnectionPool() as ptc:
+                    sql = "UPDATE user SET emby_userid="+'"'+str(userid)+'"'+" WHERE chatid ="+str(chatid)
+                    ptc.cursor.execute(sql)
+                    ptc.conn.commit()
             except Exception as e:
                 update.message.reply_text('验证成功！绑定失败！请联系管理员处理！')
             else:
@@ -168,19 +170,20 @@ def nametoid(name):
         'IsDisabled': 'false',
         'Limit': '1',
         'NameStartsWithOrGreater': name,
-        'api_key': api,
+        'api_key': telebotconfig.api,
     }
 
-    response = requests.get(url + '/emby/Users/Query', params=params, headers=headers)
+    response = requests.get(telebotconfig.url + '/emby/Users/Query', params=params, headers=headers)
     responsejson = response.json()
     id = responsejson['Items'][0]['Id']
     return id
 
 def idtoname(chatid):
     try:
-        create_sqli = "SELECT * FROM user WHERE chatid = "+ str(chatid)
-        db.execute(create_sqli)
-        result = db.fetchall()
+        with PTConnectionPool() as ptc:
+            create_sqli = "SELECT * FROM user WHERE chatid = "+ str(chatid)
+            ptc.cursor.execute(create_sqli)
+            result = ptc.cursor.fetchall()
     except Exception as e:
         print("失败:", e)
     else:
@@ -190,9 +193,9 @@ def idtoname(chatid):
     }
 
     params = {
-        'api_key': api,
+        'api_key': telebotconfig.api,
     }
-    response = requests.get(url + '/emby/Users/' + userid, params=params, headers=headers)
+    response = requests.get(telebotconfig.url + '/emby/Users/' + userid, params=params, headers=headers)
     responsejson = response.json()
     name = responsejson['Name']
     return name
@@ -201,9 +204,10 @@ def idtoname(chatid):
 def judge(chat_id):
     kk = 0
     try:
-        create_sqli = "SELECT chatid FROM user "
-        db.execute(create_sqli)
-        result = db.fetchall()
+        with PTConnectionPool() as ptc:
+            create_sqli = "SELECT chatid FROM user "
+            ptc.cursor.execute(create_sqli)
+            result = ptc.cursor.fetchall()
     except Exception as e:
         print("失败:", e)
     else:
@@ -216,9 +220,10 @@ def judge(chat_id):
 def judgebind(chat_id):
     kk = 1
     try:
-        create_sqli = "SELECT * FROM user WHERE chatid ="+str(chat_id)
-        db.execute(create_sqli)
-        result = db.fetchall()
+        with PTConnectionPool() as ptc:
+            create_sqli = "SELECT * FROM user WHERE chatid ="+str(chat_id)
+            ptc.cursor.execute(create_sqli)
+            result = ptc.cursor.fetchall()
     except Exception as e:
         print("失败:", e)
     else:
@@ -231,7 +236,7 @@ def check_user_in_the_group(update: Update, context: CallbackContext):
 
      
     user_id = update.message.chat_id 
-    check = context.bot.getChatMember(group_chat_id,user_id) 
+    check = context.bot.getChatMember(telebotconfig.group_chat_id,user_id) 
     if check.status in ['administrator', 'creator', 'member']: 
         return 1
     else:
@@ -254,7 +259,7 @@ def verify(username,password):
         
     }
 
-    response = requests.post(url + '/emby/Users/AuthenticateByName', headers=headers, json=json_data,params=params)
+    response = requests.post(telebotconfig.url + '/emby/Users/AuthenticateByName', headers=headers, json=json_data,params=params)
 
     if(response.status_code == 200):
         return 1
@@ -264,9 +269,10 @@ def verify(username,password):
 def passwd(chatid):
     check = 0
     try:
-        create_sqli = "SELECT * FROM user WHERE chatid = "+ str(chatid)
-        db.execute(create_sqli)
-        result = db.fetchall()
+        with PTConnectionPool() as ptc:
+            create_sqli = "SELECT * FROM user WHERE chatid = "+ str(chatid)
+            ptc.cursor.execute(create_sqli)
+            result = ptc.cursor.fetchall()
     except Exception as e:
         print("失败:", e)
     else:
@@ -276,14 +282,14 @@ def passwd(chatid):
     }
 
     params = {
-        'api_key': api,
+        'api_key': telebotconfig.api,
     }
 
     json_data = {
         'ResetPassword': True,
     }
 
-    response = requests.post(url + '/emby/Users/'+userid+'/Password', params=params, headers=headers, json=json_data)
+    response = requests.post(telebotconfig.url + '/emby/Users/'+userid+'/Password', params=params, headers=headers, json=json_data)
     status2 = response.status_code
     if(status2 == 204):
         check = 1
@@ -292,7 +298,7 @@ def passwd(chatid):
 
 
 def main() -> None:
-    updater = Updater(bot_api)
+    updater = Updater(telebotconfig.bot_api)
     
     dispatcher = updater.dispatcher
 
