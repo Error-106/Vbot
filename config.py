@@ -7,11 +7,11 @@ class telebotconfig:
 
 class sqlconfig:
     #TEST数据库信息
-    DB_HOST="192.168.88.6"
+    DB_HOST="127.0.0.1"
     DB_PORT=3306
-    DB_DBNAME="asterisk"
-    DB_USER="root"
-    DB_PASSWORD="kalamodo"
+    DB_DBNAME="embybot"
+    DB_USER="embybot"
+    DB_PASSWORD="embybot"
 
 
     #数据库连接编码

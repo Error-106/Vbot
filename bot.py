@@ -102,7 +102,7 @@ def create(update: Update, context: CallbackContext) -> None:
                 try: 
                     sql = "insert into user (chatid,emby_userid) values ("+str(chat_id)+","+'"'+str(id)+'"'+")"
                     print(sql)
-                    with PTConnectionPool() as ptc
+                    with PTConnectionPool() as ptc:
                         ptc.cursor.execute(sql)
                         ptc.conn.commit()
                 except Exception as e:
