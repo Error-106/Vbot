@@ -2,11 +2,9 @@
 import pymysql
 from dbutils.pooled_db import PooledDB
 from config import sqlconfig
-'''
-@功能：PT数据库连接池
-'''
+
 class PTConnectionPool(object):
-    __pool = None;
+    __pool = None
     # def __init__(self):
     #     self.conn = self.__getConn();
     #     self.cursor = self.conn.cursor();
@@ -16,10 +14,10 @@ class PTConnectionPool(object):
         self.cursor = self.conn.cursor()
         print ("PT数据库创建con和cursor")
         return self
-
+        
     def __getConn(self):
         if self.__pool is None:
-            self.__pool = PooledDB(creator=MySQLdb, mincached=sqlconfig.DB_MIN_CACHED , maxcached=sqlconfig.DB_MAX_CACHED,
+            self.__pool = PooledDB(creator=pymysql, mincached=sqlconfig.DB_MIN_CACHED , maxcached=sqlconfig.DB_MAX_CACHED,
                                maxshared=sqlconfig.DB_MAX_SHARED, maxconnections=sqlconfig.DB_MAX_CONNECYIONS,
                                blocking=sqlconfig.DB_BLOCKING, maxusage=sqlconfig.DB_MAX_USAGE,
                                setsession=sqlconfig.DB_SET_SESSION,
@@ -27,9 +25,7 @@ class PTConnectionPool(object):
                                user=sqlconfig.DB_USER , passwd=sqlconfig.DB_PASSWORD ,
                                db=sqlconfig.DB_DBNAME , use_unicode=False, charset=sqlconfig.DB_CHARSET);
         return self.__pool.connection()
-    """
-    @summary: 释放连接池资源
-    """
+
     def __exit__(self, type, value, trace):
         self.cursor.close()
         self.conn.close()
