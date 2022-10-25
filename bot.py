@@ -1,9 +1,5 @@
 #-*- coding: UTF-8 -*-
-from sqlite3 import Cursor
-from typing import NoReturn
-from time import pthread_getcpuclockid, sleep
-from asyncio import sleep
-import requests,re,telegram
+import requests,re
 from sqldriver import PTConnectionPool
 from config import telebotconfig
 from telegram import Update

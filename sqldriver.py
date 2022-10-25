@@ -2,7 +2,6 @@
 import pymysql
 from dbutils.pooled_db import PooledDB
 from config import sqlconfig
-import MySQLdb
 '''
 @功能：PT数据库连接池
 '''
